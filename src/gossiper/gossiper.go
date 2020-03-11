@@ -4,6 +4,10 @@ import "siplib"
 import "fmt"
 
 func main() {
+	test()
+}
+
+func test() {
 	//generate the request
 	z := siplib.SIPRequest{}
 	z.Init("UDP", "192.168.0.20", "OPTIONS", 2000)
@@ -26,5 +30,8 @@ func main() {
 		return
 	}
 	fmt.Println(resp)
+	//parse response
+	parsed := siplib.ParseResponse(resp)
+	fmt.Println(parsed.Headers["Server"])
 }
 
