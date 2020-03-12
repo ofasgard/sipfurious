@@ -74,7 +74,7 @@ func map_udp(targets []string, port int, timeout int) {
 	res_targets := []string{}
 	results := []string{}
 	for _,target := range targets {
-		result,err := siplib.SIPOptionsUDP(target, port, timeout)
+		result,err := siplib.MapUDP(target, port, timeout)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not map %s:%d (%s)\n", target, port, err.Error())
 		} else {

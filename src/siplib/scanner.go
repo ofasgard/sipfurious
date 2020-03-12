@@ -2,9 +2,9 @@ package siplib
 
 import "time"
 
-// High-level function to do an OPTIONS scan over UDP.
+// High-level function to do an OPTIONS check over UDP.
 
-func SIPOptionsUDP(target string, port int, timeout int) (string,error) {
+func MapUDP(target string, port int, timeout int) (string,error) {
 	//generate the request
 	req := SIPRequest{}
 	req.Init("UDP", target, "OPTIONS", 100)

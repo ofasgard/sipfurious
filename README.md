@@ -21,7 +21,7 @@ Currently implemented:
 
 Not implemented:
 
-- 'war' over UDP
+- 'war' over UDP (REGISTER/OPTIONS/INVITE)
 - 'crack' over UDP
 - 'map' over TCP
 - 'war' over TCP
