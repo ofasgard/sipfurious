@@ -11,8 +11,9 @@ $ git clone https://github.com/ofasgard/gossiper
 $ cd gossiper
 $ ./build.sh
 $ bin/gossiper --help
+```
 
-##TODO
+## TODO
 
 Currently implemented:
 

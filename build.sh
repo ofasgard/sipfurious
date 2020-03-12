@@ -5,3 +5,4 @@ export GOBIN=`pwd`/bin
 
 go get -d gossiper
 go install gossiper
+
