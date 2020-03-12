@@ -18,7 +18,7 @@ func main() {
 	}
 	method := flag.Arg(0)
 	protocol := flag.Arg(1)
-	target := flag.Arg(2)
+	targets := parse_target(flag.Arg(2))
 	timeout := *timeout_ptr
 	//validate flags
 	port,err := strconv.Atoi(flag.Arg(3))
@@ -31,7 +31,7 @@ func main() {
 		case "udp":
 			switch method{
 				case "map":
-					map_udp(target, port, timeout)
+					map_udp(targets, port, timeout)
 				case "war":
 					fmt.Fprintf(os.Stderr, "Wardialing is not yet implemented.\n")
 					return
@@ -70,18 +70,31 @@ func usage() {
 }
 
 
-func map_udp(target string, port int, timeout int) {
-	result,err := siplib.SIPOptionsUDP(target, port, timeout)
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "Could not map %s:%d over UDP:\n\t%s\n", target, port, err)
-		return
+func map_udp(targets []string, port int, timeout int) {
+	res_targets := []string{}
+	results := []string{}
+	for _,target := range targets {
+		result,err := siplib.SIPOptionsUDP(target, port, timeout)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not map %s:%d (%s)\n", target, port, err.Error())
+		} else {
+			res_targets = append(res_targets, target)
+			results = append(results, result)
+		}
 	}
-	w := new(tabwriter.Writer)
-	w.Init(os.Stdout, 0, 8, 2, '\t', 0)
-	fmt.Fprintf(w, "Target\tPort\tServer Header\n")
-	fmt.Fprintf(w, "\t\t\t\n")
-	fmt.Fprintf(w, "%s\t%d\t%s\n", target, port, result)
-	w.Flush()
+	fmt.Println("")
+	if len(res_targets) > 0 {
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 0, 8, 2, '\t', 0)
+		fmt.Fprintf(w, "Target\tPort\tServer Header\n")
+		fmt.Fprintf(w, "\t\t\t\n")
+		for index,_ := range res_targets {
+			fmt.Fprintf(w, "%s\t%d\t%s\n", res_targets[index], port, results[index])
+		}
+		w.Flush()
+	} else {
+		fmt.Println("No results found.")
+	}
 }
 
 

@@ -29,7 +29,3 @@ Not implemented:
 - 'map' over TLS
 - 'war' over TLS
 - 'crack' over TLS
-
-Other goals:
-
-- Add support for running across a whole CIDR range or an input file.

@@ -1,6 +1,5 @@
 package siplib
 
-import "errors"
 import "time"
 
 // High-level function to do an OPTIONS scan over UDP.
@@ -29,6 +28,6 @@ func SIPOptionsUDP(target string, port int, timeout int) (string,error) {
 	if val, ok := parsed.Headers["Server"]; ok {
 		return val,nil
 	} else {
-		return "",errors.New("No server header returned by SIP server.")
+		return "[NONE]",nil
 	}
 }

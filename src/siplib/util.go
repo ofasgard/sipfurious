@@ -25,3 +25,4 @@ func random_number_string(length int) string {
 	}
 	return string(b)
 }
+
