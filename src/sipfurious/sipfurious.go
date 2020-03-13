@@ -63,13 +63,9 @@ func main() {
 				case "war":
 					extensions := default_extensions()
 					if len(wordlist) > 0 {
-						extensions = []int{}
-						for _,extstr := range wordlist {
-							ext,err := strconv.Atoi(extstr)
-							if err == nil { extensions = append(extensions, ext) }
-						}
+						extensions = wordlist
 					}
-					war_udp(targets, port, timeout, extensions) //todo - make extensions configurable
+					war_udp(targets, port, timeout, extensions)
 					return
 				case "crack":
 					fmt.Fprintf(os.Stderr, "Cracking is not yet implemented.\n")
@@ -134,9 +130,9 @@ func map_udp(targets []string, port int, timeout int) {
 	}
 }
 
-func war_udp(targets []string, port int, timeout int, extensions []int) {
+func war_udp(targets []string, port int, timeout int, extensions []string) {
 	res_targets := []string{}
-	results := []map[int]string{}
+	results := []map[string]string{}
 	for _,target := range targets {
 		fmt.Printf("Trying %s:%d...\n", target, port)
 		result,err := siplib.WarInviteUDP(target, port, timeout, extensions)
@@ -155,7 +151,7 @@ func war_udp(targets []string, port int, timeout int, extensions []int) {
 		fmt.Fprintf(w, "\t\t\t\t\n")
 		for index,_ := range res_targets {
 			for extension,value := range results[index] {
-				fmt.Fprintf(w, "%s\t%d\t%d\t%s\n", res_targets[index], port, extension, value)
+				fmt.Fprintf(w, "%s\t%d\t%s\t%s\n", res_targets[index], port, extension, value)
 			}
 		}
 		w.Flush()

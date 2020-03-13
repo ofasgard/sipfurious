@@ -10,7 +10,7 @@ import "math/rand"
 func MapUDP(target string, port int, timeout int) (string,error) {
 	//generate the request
 	req := SIPRequest{}
-	req.Init("UDP", target, "OPTIONS", 100)
+	req.Init("UDP", target, "OPTIONS", "100")
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060)
 	//connect to server
@@ -41,11 +41,11 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 
 // High-level function to do an INVITE wardial over UDP.
 
-func WarInviteUDP(target string, port int, timeout int, extensions []int) (map[int]string,error) {
-	output := make(map[int]string)
+func WarInviteUDP(target string, port int, timeout int, extensions []string) (map[string]string,error) {
+	output := make(map[string]string)
 	//check a random extension to get "bad" result
 	rand.Seed(time.Now().UnixNano())
-	bad_ext := 20000 + rand.Intn(1000)
+	bad_ext := fmt.Sprintf("%d", 20000 + rand.Intn(1000))
 	bad_res,err := InviteUDP(target, port, timeout, bad_ext)
 	if err != nil {
 		return output,err
@@ -71,7 +71,7 @@ func WarInviteUDP(target string, port int, timeout int, extensions []int) (map[i
 	return output,nil
 }
 
-func InviteUDP(target string, port int, timeout int, extension int) (SIPResponse,error) {
+func InviteUDP(target string, port int, timeout int, extension string) (SIPResponse,error) {
 	output := SIPResponse{}
 	//connect to server
 	conn,err := ConnectUDP(target, port)
@@ -84,9 +84,8 @@ func InviteUDP(target string, port int, timeout int, extension int) (SIPResponse
 	req.Init("UDP", target, "INVITE", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060)
-	recipient_name := fmt.Sprintf("%d", extension)
 	recipient_uri := GenerateURI(target, "INVITE", extension)
-	req.SetRecipients(recipient_name, recipient_uri, recipient_name, recipient_uri)
+	req.SetRecipients(extension, recipient_uri, extension, recipient_uri)
 	//make the request
 	deadline := time.Now().Add(time.Duration(timeout) * time.Second)
 	conn.SetDeadline(deadline)

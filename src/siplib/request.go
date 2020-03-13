@@ -8,7 +8,7 @@ type SIPRequest struct {
 	Proto string
 	Host string
 	Method string
-	Extension int
+	Extension string
 	URI string
 	PreHeaders map[string]string
 	Headers map[string]string
@@ -18,7 +18,7 @@ type SIPRequest struct {
 
 // Just set the request up with basic info.
 
-func (r *SIPRequest) Init(proto string, host string, method string, extension int) {
+func (r *SIPRequest) Init(proto string, host string, method string, extension string) {
 	r.Proto = proto
 	r.Host = host
 	r.Method = method
@@ -47,7 +47,7 @@ func (r *SIPRequest) DefaultHeaders() {
 func (r *SIPRequest) SetContactHeaders(srchost string, srcport int) {
 	branch_id := random_number_string(10)
 	r.PreHeaders["Via"] = fmt.Sprintf("SIP/2.0/%s %s:%d;branch=z9hG4bK-%s;rport", r.Proto, srchost, srcport, branch_id)
-	r.Headers["Contact"] = fmt.Sprintf("sip:%d@%s:%d", r.Extension, srchost, srcport)
+	r.Headers["Contact"] = fmt.Sprintf("sip:%s@%s:%d", r.Extension, srchost, srcport)
 }
 
 // Set the From and To headers manually with non-default values.
@@ -84,11 +84,11 @@ func (r SIPRequest) Generate() string {
 
 // Helper function to generate a SIP URI from host, method and extension.
 
-func GenerateURI(host string, method string, extension int) string {
-	if (extension == 0) || (method == "REGISTER") {
+func GenerateURI(host string, method string, extension string) string {
+	if (extension == "") || (method == "REGISTER") {
 		return fmt.Sprintf("sip:%s", host)
 	} else {
-		return fmt.Sprintf("sip:%d@%s", extension, host)
+		return fmt.Sprintf("sip:%s@%s", extension, host)
 	}
 }
 
