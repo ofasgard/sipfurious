@@ -49,7 +49,7 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 
 // High-level function to do an INVITE wardial over UDP.
 
-func WarInviteUDP(target string, port int, timeout int, extensions []string) (map[string]string,error) {
+func WarInviteUDP(target string, port int, timeout int, throttle bool, extensions []string) (map[string]string,error) {
 	output := make(map[string]string)
 	//check a random extension to get "bad" result
 	rand.Seed(time.Now().UnixNano())
@@ -74,7 +74,7 @@ func WarInviteUDP(target string, port int, timeout int, extensions []string) (ma
 				output[extension] = "WEIRD"
 			}
 		}
-		if (index % 100 == 0) {
+		if (index % 100 == 0) && throttle {
 			time.Sleep(1 * time.Second) //throttle to prevent flooding
 		}
 	}
