@@ -22,6 +22,7 @@ Currently implemented:
 
 Coming soon:
 
+- Problem solved, just need to re-implement the ACK and BYE.
 - 'crack' over UDP
 - 'map' over TCP
 - 'war' over TCP

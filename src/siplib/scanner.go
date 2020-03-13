@@ -26,16 +26,24 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 	if err != nil {
 		return "",err
 	}
-	resp,err := RecvUDP(conn)
-	if err != nil {
-		return "",err
-	}
-	//parse the response
-	parsed := ParseResponse(resp)
-	if val, ok := parsed.Headers["Server"]; ok {
-		return val,nil
-	} else {
-		return "[NONE]",nil
+	//receive and parse responses until we get one that matches or time out
+	call_id := req.Headers["Call-ID"]
+	for {
+		resp,err := RecvUDP(conn)
+		if err != nil {
+			return "",err
+		}
+		parsed := ParseResponse(resp)
+		if val,ok := parsed.Headers["Call-ID"]; ok {
+			if val == call_id {
+				//check and return the server header
+				if val,ok := parsed.Headers["Server"]; ok {
+					return val,nil
+				} else {
+					return "[NONE]",nil
+				}
+			}
+		}
 	}
 }
 
@@ -45,7 +53,7 @@ func WarInviteUDP(target string, port int, timeout int, extensions []string) (ma
 	output := make(map[string]string)
 	//check a random extension to get "bad" result
 	rand.Seed(time.Now().UnixNano())
-	bad_ext := fmt.Sprintf("%d", 20000 + rand.Intn(1000))
+	bad_ext := fmt.Sprintf("%d", rand.Intn(999999))
 	bad_res,err := InviteUDP(target, port, timeout, bad_ext)
 	if err != nil {
 		return output,err
@@ -79,6 +87,7 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 		fmt.Println(err)
 		return output,err
 	}
+	defer conn.Close()
 	//generate the request
 	req := SIPRequest{}
 	req.Init("UDP", target, "INVITE", extension)
@@ -93,37 +102,36 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 	if err != nil {
 		return output,err
 	}
-	resp,err := RecvUDP(conn)
-	if err != nil {
-		return output,err
-	}
-	//parse the response
-	parsed := ParseResponse(resp)
-	output = parsed
-	//handle ACK and BYE requests to gracefully terminate the connection
+	//receive and parse responses until we get one that matches or time out
+	call_id := req.Headers["Call-ID"]
 	for {
+		resp,err := RecvUDP(conn)
+		if err != nil {
+			return output,err
+		}
+		parsed := ParseResponse(resp)
+		//check if an ACK is needed
 		if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-			//we need to send an ACK
-			req.Method = "ACK"
-			req.URI = GenerateURI(req.Host, req.Method, req.Extension)
-			req.Headers["Cseq"] = "1 ACK"
-			SendUDP(conn, req)
+			ack := req
+			ack.Method = "ACK"
+			ack.URI = GenerateURI(ack.Host, ack.Method, "")
+			ack.Headers["Cseq"] = "1 ACK"
+			SendUDP(conn, ack)
 		}
-		if (parsed.StatusCode == 200) {	
-			//we need to send a BYE
-			req.Method = "BYE"
-			req.URI = GenerateURI(req.Host, req.Method, req.Extension)
-			req.Headers["Cseq"] = "2 BYE"
-			SendUDP(conn, req)
-			RecvUDP(conn)
-			break
+		//check if a BYE is needed
+		if (parsed.StatusCode == 200) {
+			bye := req
+			bye.Method = "BYE"
+			bye.URI = GenerateURI(bye.Host, bye.Method, "")
+			bye.Headers["Cseq"] = "2 BYE"
+			SendUDP(conn, bye)
 		}
-		resp,err = RecvUDP(conn)
-		if err != nil {break}
-		if len(resp) == 0 {break}
-		parsed = ParseResponse(resp)
+		if val,ok := parsed.Headers["Call-ID"]; ok {
+			if val == call_id {
+				//return the SIPResponse
+				return parsed,nil
+			}
+		}
 	}
-	conn.Close()
-	return output,nil
 }
 

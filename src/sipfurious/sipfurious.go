@@ -11,7 +11,7 @@ import "io/ioutil"
 func main() {
 	//parse flags
 	flag.Usage = usage
-	timeout_ptr := flag.Int("timeout", 3, "")
+	timeout_ptr := flag.Int("timeout", 10, "")
 	wordlist_ptr := flag.String("wordlist", "", "")
 	flag.Parse()
 	timeout := *timeout_ptr
@@ -95,7 +95,7 @@ func usage() {
 	fmt.Fprintf(os.Stderr, "Optional arguments:\n")
 	w := new(tabwriter.Writer)
 	w.Init(os.Stderr, 0, 8, 2, '\t', 0)
-	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 3]\n")
+	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 10]\n")
 	fmt.Fprintf(w, "\t--wordlist <file>\tSpecify a wordlist file to use for wardialing or password cracking.\n")
 	w.Flush()
 	fmt.Fprintf(os.Stderr, "\n\nExample: %s map udp 192.168.0.20\n", os.Args[0])
@@ -144,6 +144,7 @@ func war_udp(targets []string, port int, timeout int, extensions []string) {
 			results = append(results, result)
 		}
 	}
+	fmt.Println("")
 	if len(res_targets) > 0 {
 		w := new(tabwriter.Writer)
 		w.Init(os.Stdout, 0, 8, 2, '\t', 0)
