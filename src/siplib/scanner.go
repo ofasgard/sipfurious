@@ -8,6 +8,18 @@ import "math/rand"
 // High-level function to do an OPTIONS check over UDP.
 
 func MapUDP(target string, port int, timeout int) (string,error) {
+	res,err := OptionsUDP(target, port, timeout)
+	if err != nil {
+		return "",err
+	}
+	if val,ok := res.Headers["Server"]; ok {
+		return val,nil
+	} else {
+		return "[NONE]",nil
+	}
+}
+
+func OptionsUDP(target string, port int, timeout int) (SIPResponse, error) {
 	//generate the request
 	req := SIPRequest{}
 	req.Init("UDP", target, "OPTIONS", "100")
@@ -16,7 +28,7 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 	//connect to server
 	conn,err := ConnectUDP(target, port)
 	if err != nil {
-		return "",err
+		return SIPResponse{},err
 	}
 	defer conn.Close()
 	//make the request
@@ -24,24 +36,19 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 	conn.SetDeadline(deadline)
 	err = SendUDP(conn, req)
 	if err != nil {
-		return "",err
+		return SIPResponse{},err
 	}
 	//receive and parse responses until we get one that matches or time out
 	call_id := req.Headers["Call-ID"]
 	for {
 		resp,err := RecvUDP(conn)
 		if err != nil {
-			return "",err
+			return SIPResponse{},err
 		}
 		parsed := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			if val == call_id {
-				//check and return the server header
-				if val,ok := parsed.Headers["Server"]; ok {
-					return val,nil
-				} else {
-					return "[NONE]",nil
-				}
+				return parsed,nil
 			}
 		}
 	}
@@ -82,12 +89,11 @@ func WarInviteUDP(target string, port int, timeout int, throttle bool, extension
 }
 
 func InviteUDP(target string, port int, timeout int, extension string) (SIPResponse,error) {
-	output := SIPResponse{}
 	//connect to server
 	conn,err := ConnectUDP(target, port)
 	if err != nil {
 		fmt.Println(err)
-		return output,err
+		return SIPResponse{},err
 	}
 	defer conn.Close()
 	//generate the request
@@ -102,14 +108,14 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 	conn.SetDeadline(deadline)
 	err = SendUDP(conn, req)
 	if err != nil {
-		return output,err
+		return SIPResponse{},err
 	}
 	//receive and parse responses until we get one that matches or time out
 	call_id := req.Headers["Call-ID"]
 	for {
 		resp,err := RecvUDP(conn)
 		if err != nil {
-			return output,err
+			return SIPResponse{},err
 		}
 		parsed := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok {
@@ -136,4 +142,3 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 		}
 	}
 }
-

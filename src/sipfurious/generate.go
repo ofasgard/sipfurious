@@ -20,3 +20,5 @@ func default_extensions() []string {
 	}
 	return output
 }
+
+// If a password-cracking wordlist was not supplied, generate default numeric passwords.
