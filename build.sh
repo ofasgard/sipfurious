@@ -3,6 +3,6 @@
 export GOPATH=`pwd`
 export GOBIN=`pwd`/bin
 
-go get -d gossiper
-go install gossiper
+go get -d sipfurious
+go install sipfurious
 

@@ -33,13 +33,13 @@ func (r *SIPRequest) Init(proto string, host string, method string, extension in
 
 func (r *SIPRequest) DefaultHeaders() {
 	r.Headers["Accept"] = "application/sdp"
-	r.Headers["User-Agent"] = "gossiper-scanner"
+	r.Headers["User-Agent"] = "friendly-neighbourhood-scanner"
 	r.Headers["Max-Forwards"] = "70"
 	r.Headers["Cseq"] = fmt.Sprintf("1 %s", r.Method)
 	r.Headers["Content-Length"] = fmt.Sprintf("%d", len(r.Body))
 	r.Headers["Call-ID"] = random_number_string(24)
-	r.Headers["From"] = fmt.Sprintf("\"gossiper\"<sip:100@1.1.1.1>;tag=%s", random_number_string(46))
-	r.Headers["To"] = "\"gossiper\"<sip:100@1.1.1.1>"
+	r.Headers["From"] = fmt.Sprintf("\"sipfurious\"<sip:100@1.1.1.1>;tag=%s", random_number_string(46))
+	r.Headers["To"] = "\"sipfurious\"<sip:100@1.1.1.1>"
 }
 
 // Set the Via and Contact headers with your local host/port (or the one you want to spoof).
