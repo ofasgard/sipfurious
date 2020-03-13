@@ -60,7 +60,7 @@ func WarInviteUDP(target string, port int, timeout int, extensions []string) (ma
 	}
 	bad_status := bad_res.Status
 	//now we can begin bruteforcing
-	for _,extension := range extensions {
+	for index,extension := range extensions {
 		res,err := InviteUDP(target, port, timeout, extension)
 		if err != nil {
 			return output,err
@@ -74,7 +74,9 @@ func WarInviteUDP(target string, port int, timeout int, extensions []string) (ma
 				output[extension] = "WEIRD"
 			}
 		}
-		
+		if (index % 100 == 0) {
+			time.Sleep(1 * time.Second) //throttle to prevent flooding
+		}
 	}
 	return output,nil
 }
