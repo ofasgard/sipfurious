@@ -29,4 +29,5 @@ Coming soon:
 - 'map' over TLS
 - 'war' over TLS
 - 'crack' over TLS
+- Some kind of request slowdown to prevent DDoSing.
 - Much, much more testing!

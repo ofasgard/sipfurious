@@ -138,8 +138,7 @@ func war_udp(targets []string, port int, timeout int, extensions []string) {
 		result,err := siplib.WarInviteUDP(target, port, timeout, extensions)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not wardial %s:%d (%s)\n", target, port, err.Error())
-		}
-		if len(result) > 0 {
+		} else if len(result) > 0 {
 			res_targets = append(res_targets, target)
 			results = append(results, result)
 		}

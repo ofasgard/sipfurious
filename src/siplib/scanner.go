@@ -110,23 +110,23 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 			return output,err
 		}
 		parsed := ParseResponse(resp)
-		//check if an ACK is needed
-		if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-			ack := req
-			ack.Method = "ACK"
-			ack.URI = GenerateURI(ack.Host, ack.Method, "")
-			ack.Headers["Cseq"] = "1 ACK"
-			SendUDP(conn, ack)
-		}
-		//check if a BYE is needed
-		if (parsed.StatusCode == 200) {
-			bye := req
-			bye.Method = "BYE"
-			bye.URI = GenerateURI(bye.Host, bye.Method, "")
-			bye.Headers["Cseq"] = "2 BYE"
-			SendUDP(conn, bye)
-		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
+			//check if an ACK is needed
+			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
+				ack := req
+				ack.Method = "ACK"
+				ack.URI = GenerateURI(ack.Host, ack.Method, "")
+				ack.Headers["Cseq"] = "1 ACK"
+				SendUDP(conn, ack)
+			}
+			//check if a BYE is needed
+			if (parsed.StatusCode == 200) {
+				bye := req
+				bye.Method = "BYE"
+				bye.URI = GenerateURI(bye.Host, bye.Method, "")
+				bye.Headers["Cseq"] = "2 BYE"
+				SendUDP(conn, bye)
+			}
 			if val == call_id {
 				//return the SIPResponse
 				return parsed,nil
