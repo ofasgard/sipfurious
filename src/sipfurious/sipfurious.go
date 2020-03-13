@@ -6,17 +6,16 @@ import "flag"
 import "os"
 import "strconv"
 import "text/tabwriter"
+import "io/ioutil"
 
 func main() {
 	//parse flags
 	flag.Usage = usage
 	timeout_ptr := flag.Int("timeout", 3, "")
-	start_ext_ptr := flag.Int("ext-start", 0, "")
-	end_ext_ptr := flag.Int("ext-end", 2000, "")
+	wordlist_ptr := flag.String("wordlist", "", "")
 	flag.Parse()
 	timeout := *timeout_ptr
-	start_ext := *start_ext_ptr
-	end_ext := *end_ext_ptr
+	wordlist_path := *wordlist_ptr
 	//validate args
 	if flag.NArg() < 3 {
 		usage()
@@ -35,6 +34,25 @@ func main() {
 			return
 		}
 	}
+	//validate wordlist
+	wordlist := []string{}
+	if wordlist_path != "" {
+		fd,err := os.Open(wordlist_path)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not open '%s' for reading as a wordlist file. Quitting!\n", wordlist_path)
+			return
+		}
+		buf,err := ioutil.ReadAll(fd)
+		fd.Close()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not open '%s' for reading as a wordlist file. Quitting!\n", wordlist_path)
+			return
+		}
+		parts := splitlines(string(buf))
+		for _,part := range parts {
+			if part != "" { wordlist = append(wordlist, part) }
+		}
+	}
 	//defer to the correct function based on arguments
 	switch protocol {
 		case "udp":
@@ -43,7 +61,8 @@ func main() {
 					map_udp(targets, port, timeout)
 					return
 				case "war":
-					war_udp(targets, port, timeout, start_ext, end_ext) //todo - make extensions configurable
+					extensions := default_extensions()
+					war_udp(targets, port, timeout, extensions) //todo - make extensions configurable
 					return
 				case "crack":
 					fmt.Fprintf(os.Stderr, "Cracking is not yet implemented.\n")
@@ -74,8 +93,7 @@ func usage() {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stderr, 0, 8, 2, '\t', 0)
 	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 3]\n")
-	fmt.Fprintf(w, "\t--ext-start <num>\tFirst extension to try (wardialling). [DEFAULT: 0]\n")
-	fmt.Fprintf(w, "\t--ext-end <num>\tLast extension to try (wardialling). [DEFAULT: 2000]\n")
+	fmt.Fprintf(w, "\t--wordlist <file>\tSpecify a wordlist file to use for wardialing or password cracking.\n")
 	w.Flush()
 	fmt.Fprintf(os.Stderr, "\n\nExample: %s map udp 192.168.0.20\n", os.Args[0])
 }
@@ -108,13 +126,9 @@ func map_udp(targets []string, port int, timeout int) {
 	}
 }
 
-func war_udp(targets []string, port int, timeout int, min_ext int, max_ext int) {
+func war_udp(targets []string, port int, timeout int, extensions []int) {
 	res_targets := []string{}
 	results := []map[int]string{}
-	extensions := []int{}
-	for i := min_ext; i <= max_ext; i++ {
-		extensions = append(extensions, i)
-	}
 	for _,target := range targets {
 		result,err := siplib.WarInviteUDP(target, port, timeout, extensions)
 		if err != nil {
