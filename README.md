@@ -22,8 +22,6 @@ Currently implemented:
 
 Coming soon:
 
-- Add support for configurable extensions instead of a range - for example, "0-2000,3000,4000,5000". Or maybe just a wordlist, and a function to generate defaults if none provided?
-- Add a heuristic to wardialer to identify what an "extension not found" status code looks like and tell the difference between "weird" and "not found".
 - 'crack' over UDP
 - 'map' over TCP
 - 'war' over TCP
