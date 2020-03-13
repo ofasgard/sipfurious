@@ -62,6 +62,13 @@ func main() {
 					return
 				case "war":
 					extensions := default_extensions()
+					if len(wordlist) > 0 {
+						extensions = []int{}
+						for _,extstr := range wordlist {
+							ext,err := strconv.Atoi(extstr)
+							if err == nil { extensions = append(extensions, ext) }
+						}
+					}
 					war_udp(targets, port, timeout, extensions) //todo - make extensions configurable
 					return
 				case "crack":
