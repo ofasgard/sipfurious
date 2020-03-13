@@ -22,6 +22,7 @@ Currently implemented:
 
 Coming soon:
 
+- Support for non-numerical extensions.
 - 'crack' over UDP
 - 'map' over TCP
 - 'war' over TCP

@@ -93,7 +93,7 @@ func main() {
 func usage() {
 	fmt.Fprintf(os.Stderr, "Usage: %s <map|war|crack> <udp|tcp|tls> <target> [port]\n\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "'map': Scanner that uses OPTIONS to attempt to retrieve the SIP Server header.\n")
-	fmt.Fprintf(os.Stderr, "'war': Wardialler that bruteforces extensions using various SIP methods.\n")
+	fmt.Fprintf(os.Stderr, "'war': Wardialler that bruteforces extensions using the INVITE method.\n")
 	fmt.Fprintf(os.Stderr, "'crack': Bruteforcer to crack SIP passwords for an extension.\n")
 	fmt.Fprintf(os.Stderr, "\n")
 	fmt.Fprintf(os.Stderr, "Optional arguments:\n")
@@ -110,6 +110,7 @@ func map_udp(targets []string, port int, timeout int) {
 	res_targets := []string{}
 	results := []string{}
 	for _,target := range targets {
+		fmt.Printf("Trying %s:%d...\n", target, port)
 		result,err := siplib.MapUDP(target, port, timeout)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not map %s:%d (%s)\n", target, port, err.Error())
@@ -137,6 +138,7 @@ func war_udp(targets []string, port int, timeout int, extensions []int) {
 	res_targets := []string{}
 	results := []map[int]string{}
 	for _,target := range targets {
+		fmt.Printf("Trying %s:%d...\n", target, port)
 		result,err := siplib.WarInviteUDP(target, port, timeout, extensions)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not wardial %s:%d (%s)\n", target, port, err.Error())
