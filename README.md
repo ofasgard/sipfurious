@@ -31,4 +31,4 @@ Coming soon:
 - 'map' over TLS
 - 'war' over TLS
 - 'crack' over TLS
-- Much, much more tested!
+- Much, much more testing!

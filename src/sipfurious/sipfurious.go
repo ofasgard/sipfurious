@@ -14,21 +14,26 @@ func main() {
 	start_ext_ptr := flag.Int("ext-start", 0, "")
 	end_ext_ptr := flag.Int("ext-end", 2000, "")
 	flag.Parse()
-	if flag.NArg() != 4 {
+	timeout := *timeout_ptr
+	start_ext := *start_ext_ptr
+	end_ext := *end_ext_ptr
+	//validate args
+	if flag.NArg() < 3 {
 		usage()
 		return
 	}
 	method := flag.Arg(0)
 	protocol := flag.Arg(1)
 	targets := parse_target(flag.Arg(2))
-	timeout := *timeout_ptr
-	start_ext := *start_ext_ptr
-	end_ext := *end_ext_ptr
-	//validate flags
-	port,err := strconv.Atoi(flag.Arg(3))
-	if (err != nil) || (port < 1) {
-		usage()
-		return
+	//port argument is optional
+	var port int = 5060
+	var err error
+	if flag.NArg() > 3 {
+		port,err = strconv.Atoi(flag.Arg(3))
+		if (err != nil) || (port < 1) {
+			usage()
+			return
+		}
 	}
 	//defer to the correct function based on arguments
 	switch protocol {
@@ -60,7 +65,7 @@ func main() {
 }
 
 func usage() {
-	fmt.Fprintf(os.Stderr, "Usage: %s <map|war|crack> <udp|tcp|tls> <target> <port>\n\n", os.Args[0])
+	fmt.Fprintf(os.Stderr, "Usage: %s <map|war|crack> <udp|tcp|tls> <target> [port]\n\n", os.Args[0])
 	fmt.Fprintf(os.Stderr, "'map': Scanner that uses OPTIONS to attempt to retrieve the SIP Server header.\n")
 	fmt.Fprintf(os.Stderr, "'war': Wardialler that bruteforces extensions using various SIP methods.\n")
 	fmt.Fprintf(os.Stderr, "'crack': Bruteforcer to crack SIP passwords for an extension.\n")
