@@ -35,6 +35,7 @@ Coming soon:
 - 'map' over TLS
 - 'war' over TLS
 - 'crack' over TLS
+- Implement some kind of warning when a lot of 403 forbidden is detected (need higher throttle).
 - Much, much more testing!
 
 

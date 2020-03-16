@@ -99,7 +99,7 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 	req.Init("UDP", target, "INVITE", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060)
-	recipient_uri := GenerateURI(target, "INVITE", extension)
+	recipient_uri := GenerateURI(target, extension)
 	req.SetRecipients(extension, recipient_uri, extension, recipient_uri)
 	//make the request
 	deadline := time.Now().Add(time.Duration(timeout) * time.Second)
@@ -121,7 +121,7 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
 				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, ack.Method, "")
+				ack.URI = GenerateURI(ack.Host, "")
 				ack.Headers["Cseq"] = "1 ACK"
 				SendUDP(conn, ack)
 			}
@@ -129,7 +129,7 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 			if (parsed.StatusCode == 200) {
 				bye := req
 				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, bye.Method, "")
+				bye.URI = GenerateURI(bye.Host, "")
 				bye.Headers["Cseq"] = "2 BYE"
 				SendUDP(conn, bye)
 			}
@@ -140,3 +140,4 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 		}
 	}
 }
+

@@ -23,7 +23,7 @@ func (r *SIPRequest) Init(proto string, host string, method string, extension st
 	r.Host = host
 	r.Method = method
 	r.Extension = extension
-	r.URI = GenerateURI(host, method, extension)
+	r.URI = GenerateURI(host, extension)
 	r.PreHeaders = make(map[string]string)
 	r.Headers = make(map[string]string)
 	r.PostHeaders = make(map[string]string)
@@ -82,10 +82,10 @@ func (r SIPRequest) Generate() string {
 	return output
 }
 
-// Helper function to generate a SIP URI from host, method and extension.
+// Helper function to generate a SIP URI from host and extension.
 
-func GenerateURI(host string, method string, extension string) string {
-	if (extension == "") || (method == "REGISTER") {
+func GenerateURI(host string, extension string) string {
+	if (extension == "") {
 		return fmt.Sprintf("sip:%s", host)
 	} else {
 		return fmt.Sprintf("sip:%s@%s", extension, host)
