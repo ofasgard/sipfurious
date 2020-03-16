@@ -13,11 +13,11 @@ func main() {
 	flag.Usage = usage
 	timeout_ptr := flag.Int("timeout", 10, "")
 	wordlist_ptr := flag.String("wordlist", "", "")
-	throttle_ptr := flag.Bool("disable-throttle", false, "")
+	throttle_ptr := flag.Int("throttle", 200, "")
 	flag.Parse()
 	timeout := *timeout_ptr
 	wordlist_path := *wordlist_ptr
-	disable_throttle := *throttle_ptr
+	throttle := *throttle_ptr
 	//validate args
 	if flag.NArg() < 3 {
 		usage()
@@ -67,7 +67,7 @@ func main() {
 					if len(wordlist) > 0 {
 						extensions = wordlist
 					}
-					war_udp(targets, port, timeout, !disable_throttle, extensions)
+					war_udp(targets, port, timeout, throttle, extensions)
 					return
 				case "crack":
 					fmt.Fprintf(os.Stderr, "Cracking is not yet implemented.\n")
@@ -98,8 +98,8 @@ func usage() {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stderr, 0, 8, 2, '\t', 0)
 	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 10]\n")
+	fmt.Fprintf(w, "\t--throttle <ms>\tDelay (in milliseconds) between each request when wardialing or password cracking. [DEFAULT: 200]\n")
 	fmt.Fprintf(w, "\t--wordlist <file>\tSpecify a wordlist file to use for wardialing or password cracking.\n")
-	fmt.Fprintf(w, "\t--disable-throttle\tDisable request throttling; this may DoS the server or break rate limits!\n")
 	w.Flush()
 	fmt.Fprintf(os.Stderr, "\n\nExample: %s map udp 192.168.0.20\n", os.Args[0])
 }
@@ -133,7 +133,7 @@ func map_udp(targets []string, port int, timeout int) {
 	}
 }
 
-func war_udp(targets []string, port int, timeout int, throttle bool, extensions []string) {
+func war_udp(targets []string, port int, timeout int, throttle int, extensions []string) {
 	res_targets := []string{}
 	results := []map[string]string{}
 	for _,target := range targets {
