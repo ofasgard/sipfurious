@@ -13,7 +13,7 @@ func main() {
 	flag.Usage = usage
 	timeout_ptr := flag.Int("timeout", 10, "")
 	wordlist_ptr := flag.String("wordlist", "", "")
-	throttle_ptr := flag.Int("throttle", 200, "")
+	throttle_ptr := flag.Int("throttle", 100, "")
 	flag.Parse()
 	timeout := *timeout_ptr
 	wordlist_path := *wordlist_ptr
@@ -98,7 +98,7 @@ func usage() {
 	w := new(tabwriter.Writer)
 	w.Init(os.Stderr, 0, 8, 2, '\t', 0)
 	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 10]\n")
-	fmt.Fprintf(w, "\t--throttle <ms>\tDelay (in milliseconds) between each request when wardialing or password cracking. [DEFAULT: 200]\n")
+	fmt.Fprintf(w, "\t--throttle <ms>\tDelay (in milliseconds) between each request when wardialing or password cracking. [DEFAULT: 100]\n")
 	fmt.Fprintf(w, "\t--wordlist <file>\tSpecify a wordlist file to use for wardialing or password cracking.\n")
 	w.Flush()
 	fmt.Fprintf(os.Stderr, "\n\nExample: %s map udp 192.168.0.20\n", os.Args[0])
