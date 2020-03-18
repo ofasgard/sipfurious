@@ -1,12 +1,12 @@
 # SIPfurious
 
-A SIP scanner written in Golang, inspired by SIPvicious. It can enumerate SIP servers over UDP, TCP and TLS. This tool is currently in beta, and is not yet ready for public consumption. Use it at your own risk!
-
-Currently, this tool has been tested against:
+A SIP scanner written in Golang, inspired by SIPvicious. It can enumerate SIP servers over UDP, TCP and TLS. This tool is currently in development, and has not been widely tested across many different platforms. It is likely to be riddled with bugs. Currently, this tool has been tested against:
 
 - Asterisk PBX 1.6.2.11
 - Asterisk PBX 16.6.2
 - Asterisk PBX 13.10.0 (throttle increased to 500ms)
+
+![example usage](https://user-images.githubusercontent.com/19550999/76960818-23da6880-6914-11ea-89d2-b7f2347e3e5d.png)
 
 ## Building
 
