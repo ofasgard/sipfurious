@@ -70,7 +70,7 @@ func main() {
 					war_udp(targets, port, timeout, throttle, extensions)
 					return
 				case "crack":
-					fmt.Fprintf(os.Stderr, "Cracking is not yet implemented.\n")
+					crack_udp(targets, port, timeout, throttle, "2000", []string{"password123"}) //todo - configuration
 					return
 				default:
 					usage()
@@ -162,3 +162,33 @@ func war_udp(targets []string, port int, timeout int, throttle int, extensions [
 		fmt.Println("No results found.")
 	}
 }
+
+func crack_udp(targets []string, port int, timeout int, throttle int, extension string, passwords []string) {
+	res_targets := []string{}
+	results := []string{}
+	for _,target := range targets {
+		fmt.Printf("Trying %s:%d...\n", target, port)
+		result,err := siplib.BruteforceRegisterUDP(target, port, timeout, throttle, extension, passwords)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+		}
+		for _,password := range result {
+			res_targets = append(res_targets, target)
+			results = append(results, password)
+		}
+	}
+	fmt.Println("")
+	if len(res_targets) > 0 {
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 0, 8, 2, '\t', 0)
+		fmt.Fprintf(w, "Target\tPort\tUser\tPassword\n")
+		fmt.Fprintf(w, "\t\t\t\n")
+		for index,_ := range res_targets {
+			fmt.Fprintf(w, "%s\t%d\t%s\t%s\n", res_targets[index], port, extension, results[index])
+		}
+		w.Flush()
+	} else {
+		fmt.Println("No results found.")
+	}
+}
+

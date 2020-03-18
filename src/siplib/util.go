@@ -1,5 +1,6 @@
 package siplib
 
+import "fmt"
 import "math/rand"
 import "time"
 
@@ -26,3 +27,16 @@ func random_number_string(length int) string {
 	return string(b)
 }
 
+//Generate a UUID
+
+func GenerateUUID(length int) []byte {
+	rand.Seed(time.Now().UnixNano())
+	token := make([]byte, 16)
+	rand.Read(token)
+	return token
+}
+
+func GenerateHexUUID(length int) string {
+	uuid := GenerateUUID(length)
+	return fmt.Sprintf("%x", uuid)
+}
