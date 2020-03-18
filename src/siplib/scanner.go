@@ -143,19 +143,18 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 
 // High-level function to do a REGISTER bruteforce over UDP.
 
-func BruteforceRegisterUDP(target string, port int, timeout int, throttle int, extension string, passcodes []string) ([]string, error) {
-	output := []string{}
+func BruteforceRegisterUDP(target string, port int, timeout int, throttle int, extension string, passcodes []string) (string, error) {
 	for _,passcode := range passcodes {
 		res,err := RegisterLoginUDP(target, port, timeout, extension, passcode)
 		if err != nil {
-			return output,err
+			return "",err
 		}
 		if res {
-			output = append(output, passcode)
+			return passcode,nil
 		}
 		time.Sleep(time.Duration(throttle) * time.Millisecond)
 	}
-	return output,nil
+	return "",nil
 }
 
 func RegisterCheckUDP(target string, port int, timeout int, extension string) (SIPResponse,error) {

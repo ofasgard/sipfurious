@@ -182,10 +182,9 @@ func crack_udp(targets []string, port int, timeout int, throttle int, extension 
 		result,err := siplib.BruteforceRegisterUDP(target, port, timeout, throttle, extension, passwords)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
-		}
-		for _,password := range result {
+		} else if len(result) > 0 {
 			res_targets = append(res_targets, target)
-			results = append(results, password)
+			results = append(results, result)
 		}
 	}
 	fmt.Println("")
