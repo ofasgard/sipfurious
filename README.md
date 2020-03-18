@@ -25,10 +25,10 @@ Currently implemented:
 
 - 'map' over UDP
 - 'war' over UDP
+- 'crack' over UDP
 
 Coming soon:
 
-- 'crack' over UDP
 - 'map' over TCP
 - 'war' over TCP
 - 'crack' over TCP
