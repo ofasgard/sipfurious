@@ -76,7 +76,11 @@ func main() {
 						fmt.Fprintf(os.Stderr, "Password cracking requires you provide a username/extension with the --user parameter. Quitting!\n")
 						return
 					}
-					crack_udp(targets, port, timeout, throttle, username, []string{"password123"}) //todo - configuration
+					passwords := default_passwords()
+					if len(wordlist) > 0 {
+						passwords = wordlist
+					}
+					crack_udp(targets, port, timeout, throttle, username, passwords)
 					return
 				default:
 					usage()

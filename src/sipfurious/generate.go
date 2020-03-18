@@ -22,3 +22,12 @@ func default_extensions() []string {
 }
 
 // If a password-cracking wordlist was not supplied, generate default numeric passwords.
+
+func default_passwords() []string {
+	output := []string{}
+	for i := 0; i < 9999; i++ {
+		j := fmt.Sprintf("%04d", i)
+		output = append(output, j)
+	}
+	return output
+}
