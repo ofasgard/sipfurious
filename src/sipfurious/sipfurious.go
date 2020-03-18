@@ -14,10 +14,12 @@ func main() {
 	timeout_ptr := flag.Int("timeout", 10, "")
 	wordlist_ptr := flag.String("wordlist", "", "")
 	throttle_ptr := flag.Int("throttle", 100, "")
+	username_ptr := flag.String("user", "", "")
 	flag.Parse()
 	timeout := *timeout_ptr
 	wordlist_path := *wordlist_ptr
 	throttle := *throttle_ptr
+	username := *username_ptr
 	//validate args
 	if flag.NArg() < 3 {
 		usage()
@@ -70,7 +72,11 @@ func main() {
 					war_udp(targets, port, timeout, throttle, extensions)
 					return
 				case "crack":
-					crack_udp(targets, port, timeout, throttle, "2000", []string{"password123"}) //todo - configuration
+					if username == "" {
+						fmt.Fprintf(os.Stderr, "Password cracking requires you provide a username/extension with the --user parameter. Quitting!\n")
+						return
+					}
+					crack_udp(targets, port, timeout, throttle, username, []string{"password123"}) //todo - configuration
 					return
 				default:
 					usage()
@@ -100,6 +106,7 @@ func usage() {
 	fmt.Fprintf(w, "\t--timeout <sec>\tTimeout (in seconds) for each request. [DEFAULT: 10]\n")
 	fmt.Fprintf(w, "\t--throttle <ms>\tDelay (in milliseconds) between each request when wardialing or password cracking. [DEFAULT: 100]\n")
 	fmt.Fprintf(w, "\t--wordlist <file>\tSpecify a wordlist file to use for wardialing or password cracking.\n")
+	fmt.Fprintf(w, "\t--user <user>\tSpecify a username to use; required for password cracking.\n")
 	w.Flush()
 	fmt.Fprintf(os.Stderr, "\n\nExample: %s map udp 192.168.0.20\n", os.Args[0])
 }
