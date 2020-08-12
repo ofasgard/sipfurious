@@ -17,6 +17,7 @@ type SIPAuth struct {
 	Opaque string
 	Qop string
 	Proxy string
+	Type string
 }
 
 func (a *SIPAuth) SetCreds(user string, password string) {
@@ -79,20 +80,26 @@ func (a SIPAuth) Generate(uri string, method string) (string,error) {
 func GetAuthInfo(resp SIPResponse) (SIPAuth,error) {
 	output := SIPAuth{}
 	if val,ok := resp.Headers["WWW-Authenticate"]; ok {
-		parts := strings.Split(val, ", ")
-		for _,part := range parts {
+		parts := strings.Split(val, " ")
+		if len(parts) < 2 {
+			return output,errors.New("Failed to parse the WWW-Authenticate header.")
+		}
+		output.Type = parts[0]
+		body := strings.Join(parts[1:], " ")
+		parameters := strings.Split(body, ",")
+		for _,part := range parameters {
 			element := strings.Split(part, "=")
 			if len(element) != 2 {
 				return output,errors.New("Failed to parse the WWW-Authenticate header.")
 			}
-			key := element[0]
-			value := element[1]
+			key := strings.TrimSpace(element[0])
+			value := strings.TrimSpace(element[1])
 			switch strings.ToLower(key) {
 				case "realm":
 					output.Realm = strings.Replace(value, "\"", "", -1)
 				case "nonce":
 					output.Nonce = strings.Replace(value, "\"", "", -1)
-				case "digest algorithm":
+				case "algorithm":
 					output.Algo = value
 				//todo: opaque, qop, proxy, noncecount (?)
 			}
@@ -102,3 +109,4 @@ func GetAuthInfo(resp SIPResponse) (SIPAuth,error) {
 		return output,errors.New("There was no WWW-Authenticate header in the response.")
 	}
 }
+
