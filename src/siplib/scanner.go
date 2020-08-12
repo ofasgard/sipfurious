@@ -15,9 +15,11 @@ func MapUDP(target string, port int, timeout int) (string,error) {
 	}
 	if val,ok := res.Headers["Server"]; ok {
 		return val,nil
-	} else {
-		return "[NONE]",nil
 	}
+	if val,ok := res.Headers["User-Agent"]; ok {
+		return val,nil
+	}
+	return "[NONE]",nil
 }
 
 func OptionsUDP(target string, port int, timeout int) (SIPResponse, error) {
