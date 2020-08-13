@@ -99,7 +99,15 @@ func main() {
 					war_tcp(targets, port, timeout, throttle, extensions)
 					return
 				case "crack":
-					fmt.Fprintf(os.Stderr, "CRACK over TCP is not yet implemented.\n")
+					if username == "" {
+						fmt.Fprintf(os.Stderr, "Password cracking requires you provide a username/extension with the --user parameter. Quitting!\n")
+						return
+					}
+					passwords := default_passwords()
+					if len(wordlist) > 0 {
+						passwords = wordlist
+					}
+					crack_tcp(targets, port, timeout, throttle, username, passwords)
 					return
 				default:
 					usage()
@@ -256,6 +264,34 @@ func crack_udp(targets []string, port int, timeout int, throttle int, extension 
 	for _,target := range targets {
 		fmt.Printf("Trying %s:%d...\n", target, port)
 		result,err := siplib.BruteforceRegisterUDP(target, port, timeout, throttle, extension, passwords)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
+		} else if len(result) > 0 {
+			res_targets = append(res_targets, target)
+			results = append(results, result)
+		}
+	}
+	fmt.Println("")
+	if len(res_targets) > 0 {
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 0, 8, 2, '\t', 0)
+		fmt.Fprintf(w, "Target\tPort\tUser\tPassword\n")
+		fmt.Fprintf(w, "\t\t\t\n")
+		for index,_ := range res_targets {
+			fmt.Fprintf(w, "%s\t%d\t%s\t%s\n", res_targets[index], port, extension, results[index])
+		}
+		w.Flush()
+	} else {
+		fmt.Println("No results found.")
+	}
+}
+
+func crack_tcp(targets []string, port int, timeout int, throttle int, extension string, passwords []string) {
+	res_targets := []string{}
+	results := []string{}
+	for _,target := range targets {
+		fmt.Printf("Trying %s:%d...\n", target, port)
+		result,err := siplib.BruteforceRegisterTCP(target, port, timeout, throttle, extension, passwords)
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "%s\n", err.Error())
 		} else if len(result) > 0 {

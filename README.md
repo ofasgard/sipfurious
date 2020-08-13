@@ -49,10 +49,10 @@ Currently implemented:
 - 'crack' over UDP
 - 'map' over TCP (*untested*)
 - 'war' over TCP (*untested*)
+- 'crack' over TCP (*untested*)
 
 Coming soon:
 
-- 'crack' over TCP
 - 'map' over TLS
 - 'war' over TLS
 - 'crack' over TLS
