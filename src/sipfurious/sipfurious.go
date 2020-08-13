@@ -7,8 +7,11 @@ import "os"
 import "strconv"
 import "text/tabwriter"
 import "io/ioutil"
+import "time"
+import "math/rand"
 
 func main() {
+	rand.Seed(time.Now().UnixNano())
 	//parse flags
 	flag.Usage = usage
 	timeout_ptr := flag.Int("timeout", 10, "")

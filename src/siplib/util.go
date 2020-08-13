@@ -2,15 +2,14 @@ package siplib
 
 import "fmt"
 import "math/rand"
-import "time"
 
 //Generates a random string of determinate length.
+//Don't forget to call rand.Seed(time.Now().UnixNano()) before using it.
 
 var letters = []rune("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ")
 var numbers = []rune("0123456789")
 
 func random_string(length int) string {
-	rand.Seed(time.Now().UnixNano())
 	b := make([]rune, length)
 	for i := range b {
 		b[i] = letters[rand.Intn(len(letters))]
@@ -19,7 +18,6 @@ func random_string(length int) string {
 }
 
 func random_number_string(length int) string {
-	rand.Seed(time.Now().UnixNano())
 	b := make([]rune, length)
 	for i := range b {
 		b[i] = numbers[rand.Intn(len(numbers))]
@@ -28,9 +26,9 @@ func random_number_string(length int) string {
 }
 
 //Generate a UUID
+//Don't forget to call rand.Seed(time.Now().UnixNano()) before using it.
 
 func GenerateUUID(length int) []byte {
-	rand.Seed(time.Now().UnixNano())
 	token := make([]byte, 16)
 	rand.Read(token)
 	return token

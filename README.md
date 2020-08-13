@@ -8,7 +8,8 @@ Currently, this tool has been tested against:
 
 - Asterisk PBX 1.6.2.11
 - Asterisk PBX 16.6.2
-- Asterisk PBX 13.10.0 (throttle increased to 500ms)
+- Asterisk PBX 13.10.0
+- FreePBX 15.0.16.42
 
 ## Building
 
@@ -47,9 +48,9 @@ Currently implemented:
 - 'map' over UDP
 - 'war' over UDP
 - 'crack' over UDP
-- 'map' over TCP (*untested*)
-- 'war' over TCP (*untested*)
-- 'crack' over TCP (*untested*)
+- 'map' over TCP
+- 'war' over TCP
+- 'crack' over TCP
 
 Coming soon:
 
