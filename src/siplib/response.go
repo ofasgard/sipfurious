@@ -2,6 +2,7 @@ package siplib
 
 import "strings"
 import "strconv"
+import "errors"
 
 // Struct used to keep track of a SIP response.
 
@@ -14,25 +15,34 @@ type SIPResponse struct {
 
 // Parse a raw response string; return a SIPResponse object.
 
-func ParseResponse(resp string) SIPResponse {
+func ParseResponse(resp string) (SIPResponse,error) {
 	output := SIPResponse{}
 	parts := strings.Split(resp, "\r\n\r\n")
+	if len(parts) < 2 {
+		return output,errors.New("Received a SIP response we couldn't parse")
+	}
 	header_part := parts[0]
 	output.Body = parts[1]
 	output.Headers = make(map[string]string)
 	headers := strings.Split(header_part, "\r\n")
+	if len(headers) < 2 {
+		return output,errors.New("Received a SIP response we couldn't parse")
+	}
 	output.Status = headers[0]
 	if len(output.Status) > 12 {
 		code,err := strconv.Atoi(output.Status[8:11])
 		if err == nil {
 			output.StatusCode = code
 		}
+		//don't return an error as not every response includes a statuscode
 	}
 	for _,header := range headers[1:] {
 		header_parts := strings.Split(header, ": ")
-		output.Headers[header_parts[0]] = header_parts[1]
+		if len(header_parts) > 1 {
+			output.Headers[header_parts[0]] = strings.Join(header_parts[1:], ": ")
+		}
 	}
-	return output
+	return output,nil
 }
 
 // Constants used to represent SIP response status codes.

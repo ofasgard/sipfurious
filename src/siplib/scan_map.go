@@ -44,7 +44,10 @@ func OptionsUDP(target string, port int, timeout int) (SIPResponse, error) {
 		if err != nil {
 			return SIPResponse{},err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return SIPResponse{},err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			if val == call_id {
 				return parsed,nil
@@ -95,7 +98,10 @@ func OptionsTCP(target string, port int, timeout int) (SIPResponse, error) {
 		if err != nil {
 			return SIPResponse{},err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return SIPResponse{},err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			if val == call_id {
 				return parsed,nil

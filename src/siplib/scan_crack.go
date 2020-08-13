@@ -64,7 +64,10 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 		if err != nil {
 			return false,err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return false,err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
@@ -126,7 +129,10 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 		if err != nil {
 			return SIPResponse{},err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return SIPResponse{},err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
@@ -218,7 +224,10 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 		if err != nil {
 			return false,err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return false,err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
@@ -280,7 +289,10 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 		if err != nil {
 			return SIPResponse{},err
 		}
-		parsed := ParseResponse(resp)
+		parsed,err := ParseResponse(resp)
+		if err != nil {
+			return SIPResponse{},err
+		}
 		if val,ok := parsed.Headers["Call-ID"]; ok {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
