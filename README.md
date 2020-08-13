@@ -19,6 +19,24 @@ $ ./build.sh
 $ bin/sipfurious --help
 ```
 
+## Usage
+
+```Usage: bin/sipfurious <map|war|crack> <udp|tcp|tls> <target> [port]
+
+'map': Scanner that uses OPTIONS to attempt to retrieve the SIP Server header.
+'war': Wardialler that bruteforces extensions using the INVITE method.
+'crack': Bruteforcer to crack SIP passwords for an extension.
+
+Optional arguments:
+	--timeout <sec>		Timeout (in seconds) for each request. [DEFAULT: 10]
+	--throttle <ms>		Delay (in milliseconds) between each request when wardialing or password cracking. [DEFAULT: 100]
+	--wordlist <file>	Specify a wordlist file to use for wardialing or password cracking.
+	--user <user>		Specify a username to use; required for password cracking.
+
+
+Example: bin/sipfurious map udp 192.168.0.20
+```
+
 ## TODO
 
 Currently implemented:
