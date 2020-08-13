@@ -23,7 +23,8 @@ $ bin/sipfurious --help
 
 ## Usage
 
-```Usage: bin/sipfurious <map|war|crack> <udp|tcp|tls> <target> [port]
+```
+Usage: bin/sipfurious <map|war|crack> <udp|tcp|tls> <target> [port]
 
 'map': Scanner that uses OPTIONS to attempt to retrieve the SIP Server header.
 'war': Wardialler that bruteforces extensions using the INVITE method.
