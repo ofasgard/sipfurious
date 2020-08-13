@@ -92,7 +92,11 @@ func main() {
 					map_tcp(targets, port, timeout)
 					return
 				case "war":
-					fmt.Fprintf(os.Stderr, "WAR over TCP is not yet implemented.\n")
+					extensions := default_extensions()
+					if len(wordlist) > 0 {
+						extensions = wordlist
+					}
+					war_tcp(targets, port, timeout, throttle, extensions)
 					return
 				case "crack":
 					fmt.Fprintf(os.Stderr, "CRACK over TCP is not yet implemented.\n")
@@ -214,6 +218,37 @@ func war_udp(targets []string, port int, timeout int, throttle int, extensions [
 		fmt.Println("No results found.")
 	}
 }
+
+func war_tcp(targets []string, port int, timeout int, throttle int, extensions []string) {
+	res_targets := []string{}
+	results := []map[string]string{}
+	for _,target := range targets {
+		fmt.Printf("Trying %s:%d...\n", target, port)
+		result,err := siplib.WarInviteTCP(target, port, timeout, throttle, extensions)
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not wardial %s:%d (%s)\n", target, port, err.Error())
+		} else if len(result) > 0 {
+			res_targets = append(res_targets, target)
+			results = append(results, result)
+		}
+	}
+	fmt.Println("")
+	if len(res_targets) > 0 {
+		w := new(tabwriter.Writer)
+		w.Init(os.Stdout, 0, 8, 2, '\t', 0)
+		fmt.Fprintf(w, "Target\tPort\tExtension\tResult\n")
+		fmt.Fprintf(w, "\t\t\t\t\n")
+		for index,_ := range res_targets {
+			for extension,value := range results[index] {
+				fmt.Fprintf(w, "%s\t%d\t%s\t%s\n", res_targets[index], port, extension, value)
+			}
+		}
+		w.Flush()
+	} else {
+		fmt.Println("No results found.")
+	}
+}
+
 
 func crack_udp(targets []string, port int, timeout int, throttle int, extension string, passwords []string) {
 	res_targets := []string{}
