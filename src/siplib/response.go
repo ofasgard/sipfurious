@@ -17,25 +17,31 @@ type SIPResponse struct {
 
 func ParseResponse(resp string) (SIPResponse,error) {
 	output := SIPResponse{}
+	output.Headers = make(map[string]string)
+	//split up the headers from the body
 	parts := strings.Split(resp, "\r\n\r\n")
 	if len(parts) < 2 {
 		return output,errors.New("Received a SIP response we couldn't parse")
 	}
 	header_part := parts[0]
 	output.Body = parts[1]
-	output.Headers = make(map[string]string)
+	//extract the status line
 	headers := strings.Split(header_part, "\r\n")
 	if len(headers) < 2 {
 		return output,errors.New("Received a SIP response we couldn't parse")
 	}
 	output.Status = headers[0]
-	if len(output.Status) > 12 {
-		code,err := strconv.Atoi(output.Status[8:11])
-		if err == nil {
-			output.StatusCode = code
-		}
-		//don't return an error as not every response includes a statuscode
+	//attempt to extract a response code from the status line
+	status_parts := strings.Split(output.Status, " ")
+	if len(status_parts) < 2 {
+		return output,errors.New("Received a SIP response we couldn't parse")
 	}
+	code,err := strconv.Atoi(status_parts[1])
+	if err != nil {
+		return output,err
+	}
+	output.StatusCode = code
+	//parse each line and identify any valid headers
 	for _,header := range headers[1:] {
 		header_parts := strings.Split(header, ": ")
 		if len(header_parts) > 1 {

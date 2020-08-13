@@ -66,10 +66,7 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if err != nil {
-			return SIPResponse{},err
-		}
-		if val,ok := parsed.Headers["Call-ID"]; ok {
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
@@ -155,10 +152,7 @@ func InviteTCP(target string, port int, timeout int, extension string) (SIPRespo
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if err != nil {
-			return SIPResponse{},err
-		}
-		if val,ok := parsed.Headers["Call-ID"]; ok {
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
