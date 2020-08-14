@@ -37,7 +37,7 @@ func (a SIPAuth) Generate(uri string, method string) (string,error) {
 	if (a.Algo == "") || (strings.ToLower(a.Algo) == "md5") {
 		authstr := fmt.Sprintf("%s:%s:%s", a.User, a.Realm, a.Password)
 		auth_digest = fmt.Sprintf("%x", md5.Sum([]byte(authstr)))
-		output += ",algorithm=MD5"
+		output += ",algorithm=md5"
 	}
 	if (strings.ToLower(a.Algo) == "md5-sess") {
 		cnonce := GenerateHexUUID(16)
@@ -47,7 +47,7 @@ func (a SIPAuth) Generate(uri string, method string) (string,error) {
 		auth_digest = fmt.Sprintf("%x", md5.Sum([]byte(authstr)))
 		sess := fmt.Sprintf("%s:%s:%s", auth_digest, a.Nonce, cnonce)
 		auth_digest = fmt.Sprintf("%x", md5.Sum([]byte(sess)))
-		output += ",algorithm=MD5-sess"
+		output += ",algorithm=md5-sess"
 	}
 	if auth_digest == "" {
 		return "",errors.New("Unknown algorithm: " + a.Algo)
@@ -61,7 +61,8 @@ func (a SIPAuth) Generate(uri string, method string) (string,error) {
 		return "",errors.New("Authentication type 'auth-int' is not supported.")
 	}
 	if strings.ToLower(a.Qop) == "auth" {
-		res := fmt.Sprintf("%s:%s:%s:%s:%s:%s", auth_digest, a.Nonce, a.NonceCount, cnonce, a.Qop, method_digest)
+		nc := fmt.Sprintf("%08d", a.NonceCount)
+		res := fmt.Sprintf("%s:%s:%s:%s:%s:%s", auth_digest, a.Nonce, nc, cnonce, a.Qop, method_digest)
 		res_digest := fmt.Sprintf("%x", md5.Sum([]byte(res)))
 		output += fmt.Sprintf(",response=\"%s\"", res_digest)
 	} else {
@@ -79,6 +80,7 @@ func (a SIPAuth) Generate(uri string, method string) (string,error) {
 
 func GetAuthInfo(resp SIPResponse) (SIPAuth,error) {
 	output := SIPAuth{}
+	output.NonceCount = 1
 	if val,ok := resp.Headers["WWW-Authenticate"]; ok {
 		parts := strings.Split(val, " ")
 		if len(parts) < 2 {
@@ -101,7 +103,10 @@ func GetAuthInfo(resp SIPResponse) (SIPAuth,error) {
 					output.Nonce = strings.Replace(value, "\"", "", -1)
 				case "algorithm":
 					output.Algo = value
-				//todo: opaque, qop, proxy, noncecount (?)
+				case "opaque":
+					output.Opaque = strings.Replace(value, "\"", "", -1)
+				case "qop":
+					output.Qop = strings.Replace(value, "\"", "", -1)
 			}
 		}
 		return output,nil

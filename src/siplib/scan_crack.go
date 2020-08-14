@@ -39,7 +39,7 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 	defer conn.Close()
 	//generate the request
 	req := SIPRequest{}
-	req.Init("UDP", target, "REGISTER", "")
+	req.Init("UDP", target, "REGISTER", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060) 
 	recipient_uri := GenerateURI(target, auth.User)
@@ -66,6 +66,7 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 		}
 		parsed,err := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
+			/*
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
@@ -82,6 +83,7 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 				bye.Headers["Cseq"] = "2 BYE"
 				SendUDP(conn, bye)
 			}
+			*/
 			if (val == call_id) {
 				switch parsed.StatusCode {
 					case 401:
@@ -107,7 +109,7 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 	defer conn.Close()
 	//generate the request
 	req := SIPRequest{}
-	req.Init("UDP", target, "REGISTER", "")
+	req.Init("UDP", target, "REGISTER", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060) 
 	recipient_uri := GenerateURI(target, extension)
@@ -128,6 +130,7 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 		}
 		parsed,err := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
+			/*
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
@@ -144,6 +147,7 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 				bye.Headers["Cseq"] = "2 BYE"
 				SendUDP(conn, bye)
 			}
+			*/
 			if (val == call_id) {
 				if parsed.StatusCode == 401 {
 					//return the SIPResponse
@@ -193,7 +197,7 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 	defer conn.Close()
 	//generate the request
 	req := SIPRequest{}
-	req.Init("TCP", target, "REGISTER", "")
+	req.Init("TCP", target, "REGISTER", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060) 
 	recipient_uri := GenerateURI(target, auth.User)
@@ -220,6 +224,7 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 		}
 		parsed,err := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
+			/*
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
@@ -236,6 +241,7 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 				bye.Headers["Cseq"] = "2 BYE"
 				SendTCP(conn, bye)
 			}
+			*/
 			if (val == call_id) {
 				switch parsed.StatusCode {
 					case 401:
@@ -261,7 +267,7 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 	defer conn.Close()
 	//generate the request
 	req := SIPRequest{}
-	req.Init("TCP", target, "REGISTER", "")
+	req.Init("TCP", target, "REGISTER", extension)
 	req.DefaultHeaders()
 	req.SetContactHeaders("1.1.1.1", 5060) 
 	recipient_uri := GenerateURI(target, extension)
@@ -282,6 +288,7 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 		}
 		parsed,err := ParseResponse(resp)
 		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
+			/*
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
 				ack := req
@@ -298,6 +305,7 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 				bye.Headers["Cseq"] = "2 BYE"
 				SendTCP(conn, bye)
 			}
+			*/
 			if (val == call_id) {
 				if parsed.StatusCode == 401 {
 					//return the SIPResponse
@@ -310,3 +318,5 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 		}
 	}
 }
+
+
