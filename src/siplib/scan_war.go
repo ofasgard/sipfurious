@@ -20,7 +20,7 @@ func WarInviteUDP(target string, port int, timeout int, throttle int, extensions
 	//now we can begin bruteforcing
 	for _,extension := range extensions {
 		res,err := InviteUDP(target, port, timeout, extension)
-		if err != nil {
+		if (err != nil) && CheckScanError(err) {
 			return output,err
 		}
 		if res.Status != bad_status {
@@ -102,7 +102,7 @@ func WarInviteTCP(target string, port int, timeout int, throttle int, extensions
 	//now we can begin bruteforcing
 	for _,extension := range extensions {
 		res,err := InviteTCP(target, port, timeout, extension)
-		if err != nil {
+		if (err != nil) && CheckScanError(err) {
 			return output,err
 		}
 		if res.Status != bad_status {

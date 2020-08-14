@@ -8,7 +8,7 @@ import "errors"
 func BruteforceRegisterUDP(target string, port int, timeout int, throttle int, extension string, passcodes []string) (string, error) {
 	for _,passcode := range passcodes {
 		res,err := RegisterLoginUDP(target, port, timeout, extension, passcode)
-		if err != nil {
+		if (err != nil) && CheckScanError(err) {
 			return "",err
 		}
 		if res {
@@ -154,7 +154,7 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 func BruteforceRegisterTCP(target string, port int, timeout int, throttle int, extension string, passcodes []string) (string, error) {
 	for _,passcode := range passcodes {
 		res,err := RegisterLoginTCP(target, port, timeout, extension, passcode)
-		if err != nil {
+		if (err != nil) && CheckScanError(err) {
 			return "",err
 		}
 		if res {
