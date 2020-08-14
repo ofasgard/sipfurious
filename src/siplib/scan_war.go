@@ -66,29 +66,23 @@ func InviteUDP(target string, port int, timeout int, extension string) (SIPRespo
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendUDP(conn, ack)
+				err := UDPHandleACK(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendUDP(conn, bye)
+				err := UDPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
-			*/
-			if val == call_id {
-				//return the SIPResponse
-				return parsed,nil
-			}
+			//return the SIPResponse
+			return parsed,nil
 		}
 	}
 }
@@ -154,29 +148,23 @@ func InviteTCP(target string, port int, timeout int, extension string) (SIPRespo
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendTCP(conn, ack)
+				err := TCPHandleACK(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendTCP(conn, bye)
+				err := TCPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
-			*/
-			if val == call_id {
-				//return the SIPResponse
-				return parsed,nil
-			}
+			//return the SIPResponse
+			return parsed,nil
 		}
 	}
 }
