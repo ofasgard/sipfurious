@@ -29,7 +29,7 @@ func WarInviteUDP(target string, port int, timeout int, throttle int, extensions
 			} else if strings.HasPrefix(res.Status, OKAY) {
 				output[extension] = "NOAUTH"
 			} else {
-				output[extension] = "WEIRD"
+				output[extension] = fmt.Sprintf("WEIRD (%d)", res.StatusCode)
 			}
 		}
 		time.Sleep(time.Duration(throttle) * time.Millisecond) //throttle to prevent flooding
@@ -117,7 +117,7 @@ func WarInviteTCP(target string, port int, timeout int, throttle int, extensions
 			} else if strings.HasPrefix(res.Status, OKAY) {
 				output[extension] = "NOAUTH"
 			} else {
-				output[extension] = "WEIRD"
+				output[extension] = fmt.Sprintf("WEIRD (%d)", res.StatusCode)
 			}
 		}
 		time.Sleep(time.Duration(throttle) * time.Millisecond) //throttle to prevent flooding
