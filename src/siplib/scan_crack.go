@@ -65,36 +65,30 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 			return false,err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendUDP(conn, ack)
+				err := UDPHandleACK(conn, req, parsed)
+				if err != nil {
+					return false,err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendUDP(conn, bye)
-			}
-			*/
-			if (val == call_id) {
-				switch parsed.StatusCode {
-					case 401:
-						return false,nil
-					case 403:
-						return false,nil
-					case 200:
-						return true,nil
-					default:
-						return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
+				err := UDPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return false,err
 				}
+			}
+			switch parsed.StatusCode {
+				case 401:
+					return false,nil
+				case 403:
+					return false,nil
+				case 200:
+					return true,nil
+				default:
+					return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
 			}
 		}
 	}
@@ -129,33 +123,27 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendUDP(conn, ack)
+				err := UDPHandleACK(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendUDP(conn, bye)
-			}
-			*/
-			if (val == call_id) {
-				if parsed.StatusCode == 401 {
-					//return the SIPResponse
-					return parsed,nil
-				} else {
-					//???
-					return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
+				err := UDPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
 				}
+			}
+			if parsed.StatusCode == 401 {
+				//return the SIPResponse
+				return parsed,nil
+			} else {
+				//???
+				return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
 			}
 		}
 	}
@@ -223,36 +211,30 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 			return false,err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendTCP(conn, ack)
+				err := TCPHandleACK(conn, req, parsed)
+				if err != nil {
+					return false,err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendTCP(conn, bye)
-			}
-			*/
-			if (val == call_id) {
-				switch parsed.StatusCode {
-					case 401:
-						return false,nil
-					case 403:
-						return false,nil
-					case 200:
-						return true,nil
-					default:
-						return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
+				err := TCPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return false,err
 				}
+			}
+			switch parsed.StatusCode {
+				case 401:
+					return false,nil
+				case 403:
+					return false,nil
+				case 200:
+					return true,nil
+				default:
+					return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
 			}
 		}
 	}
@@ -287,33 +269,27 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 			return SIPResponse{},err
 		}
 		parsed,err := ParseResponse(resp)
-		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) {
-			/*
+		if val,ok := parsed.Headers["Call-ID"]; ok && (err == nil) && (val == call_id) {
 			//check if an ACK is needed
 			if (parsed.StatusCode >= 200) && (parsed.StatusCode < 699) {
-				ack := req
-				ack.Method = "ACK"
-				ack.URI = GenerateURI(ack.Host, "")
-				ack.Headers["Cseq"] = "1 ACK"
-				SendTCP(conn, ack)
+				err := TCPHandleACK(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
+				}
 			}
 			//check if a BYE is needed
 			if (parsed.StatusCode == 200) {
-				bye := req
-				bye.Method = "BYE"
-				bye.URI = GenerateURI(bye.Host, "")
-				bye.Headers["Cseq"] = "2 BYE"
-				SendTCP(conn, bye)
-			}
-			*/
-			if (val == call_id) {
-				if parsed.StatusCode == 401 {
-					//return the SIPResponse
-					return parsed,nil
-				} else {
-					//???
-					return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
+				err := TCPHandleBYE(conn, req, parsed)
+				if err != nil {
+					return SIPResponse{},err
 				}
+			}
+			if parsed.StatusCode == 401 {
+				//return the SIPResponse
+				return parsed,nil
+			} else {
+				//???
+				return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
 			}
 		}
 	}
