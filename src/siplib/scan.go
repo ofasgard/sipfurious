@@ -11,6 +11,7 @@ func UDPHandleACK(conn *net.UDPConn, req SIPRequest, res SIPResponse) error {
 	ack.Method = "ACK"
 	ack.URI = GenerateURI(ack.Host, "")
 	ack.Headers["Cseq"] = "1 ACK"
+	ack.Headers["To"] = res.Headers["To"]
 	err := SendUDP(conn, ack)
 	return err
 }
@@ -29,6 +30,7 @@ func TCPHandleACK(conn *net.TCPConn, req SIPRequest, res SIPResponse) error {
 	ack.Method = "ACK"
 	ack.URI = GenerateURI(ack.Host, "")
 	ack.Headers["Cseq"] = "1 ACK"
+	ack.Headers["To"] = res.Headers["To"]
 	err := SendTCP(conn, ack)
 	return err
 }
