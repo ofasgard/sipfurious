@@ -87,6 +87,8 @@ func RegisterLoginUDP(target string, port int, timeout int, extension string, pa
 					return false,nil
 				case 200:
 					return true,nil
+				case 100:
+					//ignore 100 Trying and wait for a response...
 				default:
 					return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
 			}
@@ -138,12 +140,15 @@ func RegisterCheckUDP(target string, port int, timeout int, extension string) (S
 					return SIPResponse{},err
 				}
 			}
-			if parsed.StatusCode == 401 {
-				//return the SIPResponse
-				return parsed,nil
-			} else {
-				//???
-				return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
+			switch parsed.StatusCode {
+				case 401:
+					//return the SIPResponse
+					return parsed,nil
+				case 100:
+					//ignore 100 Trying and wait for a response...
+				default:
+					//???
+					return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
 			}
 		}
 	}
@@ -233,6 +238,8 @@ func RegisterLoginTCP(target string, port int, timeout int, extension string, pa
 					return false,nil
 				case 200:
 					return true,nil
+				case 100:
+					//ignore 100 Trying and wait for a response...
 				default:
 					return false,errors.New("Unrecognised status code during authentication attempt: " + parsed.Status)
 			}
@@ -284,12 +291,15 @@ func RegisterCheckTCP(target string, port int, timeout int, extension string) (S
 					return SIPResponse{},err
 				}
 			}
-			if parsed.StatusCode == 401 {
-				//return the SIPResponse
-				return parsed,nil
-			} else {
-				//???
-				return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
+			switch parsed.StatusCode {
+				case 401:
+					//return the SIPResponse
+					return parsed,nil
+				case 100:
+					//ignore 100 Trying and wait for a response...
+				default:
+					//???
+					return parsed,errors.New("Unrecognised status code during initial check: " + parsed.Status)
 			}
 		}
 	}
