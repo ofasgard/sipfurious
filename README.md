@@ -18,7 +18,7 @@ SIPfurious has no dependencies besides Go itself. To build the program, just do:
 ```shell
 $ git clone https://github.com/ofasgard/sipfurious
 $ cd sipfurious
-$ ./build.sh
+$ go build
 $ bin/sipfurious --help
 ```
 
